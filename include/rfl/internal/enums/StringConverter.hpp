@@ -22,7 +22,7 @@ class StringConverter {
 
   static constexpr auto names_ = get_enum_names<EnumType, is_flag_enum_>();
 
-  using NamesLiteral = typename decltype(names_)::Literal;
+  using NamesLiteral = std::string_view;// typename decltype(names_)::Literal;
 
  public:
   /// Transform an enum to a matching string.
@@ -69,23 +69,26 @@ class StringConverter {
   /// This assumes that _enum can be exactly matched to one of the names and
   /// does not have to be combined using |.
   static std::string enum_to_single_string(const EnumType _enum) {
-    const auto to_str = [](const auto _l) { return _l.str(); };
-
-    for (size_t i = 0; i < names_.size; ++i) {
-      if (names_.enums_[i] == _enum) {
-        return NamesLiteral::from_value(
-                   static_cast<typename NamesLiteral::ValueType>(i))
-            .transform(to_str)
-            .value();
-      }
-    }
-
-    return std::to_string(static_cast<std::underlying_type_t<EnumType>>(_enum));
+      auto name = magic_enum::enum_name(_enum);
+      return std::string{name.data(), name.size()};
+//     const auto to_str = [](const auto _l) { return _l.str(); };
+// 
+//     for (size_t i = 0; i < names_.size; ++i) {
+//       if (names_.enums_[i] == _enum) {
+//         return NamesLiteral::from_value(
+//                    static_cast<typename NamesLiteral::ValueType>(i))
+//             .transform(to_str)
+//             .value();
+//       }
+//     }
+// 
+//     return std::to_string(static_cast<std::underlying_type_t<EnumType>>(_enum));
   }
 
   /// Finds the enum matching the literal.
   static EnumType literal_to_enum(const NamesLiteral _lit) noexcept {
-    return names_.enums_[_lit.value()];
+      magic_enum::enum_cast<EnumType>(_lit);
+    //return names_.enums_[_lit.value()];
   }
 
   /// This assumes that _enum can be exactly matched to one of the names and

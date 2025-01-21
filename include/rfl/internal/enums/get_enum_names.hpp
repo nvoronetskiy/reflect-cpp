@@ -14,6 +14,8 @@
 #include "Names.hpp"
 #include "is_scoped_enum.hpp"
 
+#include <magic_enum/magic_enum.hpp>
+
 // https://en.cppreference.com/w/cpp/language/static_cast:
 
 // 8) A value of integer or enumeration type can be converted to any complete
@@ -135,18 +137,19 @@ consteval auto get_enum_names_impl() {
 
 template <class EnumType, bool _is_flag>
 consteval auto get_enum_names() {
-  static_assert(is_scoped_enum<EnumType>,
-                "You must use scoped enums (using class or struct) for the "
-                "parsing to work!");
+//   static_assert(is_scoped_enum<EnumType>,
+//                 "You must use scoped enums (using class or struct) for the "
+//                 "parsing to work!");
 
-  static_assert(std::is_integral_v<std::underlying_type_t<EnumType>>,
-                "The underlying type of any Enum must be integral!");
-
-  constexpr auto max = get_max<std::underlying_type_t<EnumType>, _is_flag>();
-
-  using EmptyNames = Names<EnumType, rfl::Literal<"">, 0>;
-
-  return get_enum_names_impl<EnumType, EmptyNames, max, _is_flag, 0>();
+//   static_assert(std::is_integral_v<std::underlying_type_t<EnumType>>,
+//                 "The underlying type of any Enum must be integral!");
+// 
+//   constexpr auto max = get_max<std::underlying_type_t<EnumType>, _is_flag>();
+// 
+//   using EmptyNames = Names<EnumType, rfl::Literal<"">, 0>;
+// 
+//   return get_enum_names_impl<EnumType, EmptyNames, max, _is_flag, 0>();
+  return magic_enum::enum_names<EnumType>();
 }
 
 }  // namespace enums
