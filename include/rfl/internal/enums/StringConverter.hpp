@@ -36,7 +36,7 @@ class StringConverter {
 
   /// Transforms a string to the matching enum.
   static Result<EnumType> string_to_enum(const std::string& _str) {
-    static_assert(names_.size != 0,
+    static_assert(names_.size() != 0,
                   "No enum could be identified. Please choose enum values "
                   "between 0 to 127 or for flag enums choose 1,2,4,8,16,...");
     if constexpr (is_flag_enum_) {
@@ -94,10 +94,13 @@ class StringConverter {
   /// This assumes that _enum can be exactly matched to one of the names and
   /// does not have to be combined using |.
   static Result<EnumType> single_string_to_enum(const std::string& _str) {
-    const auto r = NamesLiteral::from_string(_str).transform(literal_to_enum);
-    if (r) {
-      return r;
-    } else {
+    const auto r = magic_enum::enum_cast<EnumType>(_str);// NamesLiteral::from_string(_str).transform(literal_to_enum);
+    if (r)
+    {
+      return *r;
+    }
+    else
+    {
       try {
         return static_cast<EnumType>(std::stoi(_str));
       } catch (std::exception& exp) {
